@@ -3,6 +3,13 @@ package textadventure.game;
 public class Game {
     private Parser parser;
     private Room currentRoom;
+    private Room sandlot;
+    
+    private Room treeHouse;
+    private Room beastYard;
+    
+    private Item pfFlyers;
+    
     private Player player;
     private CLS cls_var;
     public Game() {
@@ -24,13 +31,13 @@ public class Game {
     }
 
     public void setupGame() {
-        Room sandlot = new Room("sandlot", " You are in the Sandlot.", "you are in the Sandlot.  To the north is your house, to the south is the tree house, and the east is The Beast’s yard.  There is a large fence you can’t climb over");
-        Room treeHouse = new Room ("tree house", "you are in the tree house", "you are in the tree house.  To the north is the Sandlot, and to the NW is the beast’s yard, but an unprotected fall from this height would surely injure you");
+        sandlot = new Room("sandlot", " You are in the Sandlot.", "you are in the Sandlot.  To the north is your house, to the south is the tree house, and the east is The Beast’s yard.  There is a large fence you can’t climb over");
+        treeHouse = new Room ("tree house", "you are in the tree house", "you are in the tree house.  To the north is the Sandlot, and to the NW is the beast’s yard, but an unprotected fall from this height would surely injure you");
         Room shoeStore = new Room ("shoeStore", "you are in the shoe store", "You are in the shoe store.  There is a pair of brand new PF Flyers (guaranteed to make a kid run faster and jump higher) on the shelf which cost $50.  To the west is smalls house.");
         Room smallsHouse= new Room ("smallsHouse", "you are in Small’s house", "You are in Small’s house.  On a shelf is some money and a rope long enough to help you climb down a tall fence. To the west is the shoe store");
-        Room beastYard = new Room ("beastYard", "you are in the Beast’s backyard.", "You are in the Beast’s backyard.  In front of you sits the ball signed by Babe Ruth.");
+        beastYard = new Room ("beastYard", "you are in the Beast’s backyard.", "You are in the Beast’s backyard.  In front of you sits the ball signed by Babe Ruth.");
 
-        Item pfFlyers = new Item ("pfFlyers", "shoe descript");
+        pfFlyers = new Item ("pfFlyers", "shoe descript");
         Item money= new Item ("money", "money descript");
         Item rope = new Item ("rope", "rope descript");
         Item ball = new Item ("ball", "ball descript");
@@ -40,7 +47,7 @@ public class Game {
         sandlot.setExit("east", beastYard);
         treeHouse.setExit ("northeast", beastYard);
         treeHouse.setExit("north", sandlot);
-        shoeStore.setExit ("east", sandlot);
+        shoeStore.setExit ("east", smallsHouse);
         smallsHouse.setExit ("south", sandlot);
         smallsHouse.setExit("west", shoeStore);
         beastYard.setExit ("west", sandlot); 
@@ -49,6 +56,13 @@ public class Game {
         smallsHouse.setItem("rope", rope);
         beastYard.setItem ("ball", ball);
         
+        Help go = new Help ("go", "Use go command to move across the map. Use go and then a direction as stated in the description");
+        Help grab = new Help ("grab", "Use grab command to pick up things found in rooms.  Use grab and then an item name as stated in the description.");
+        Help drop = new Help ("drop", "Use drop command to remove items from your inventory.  Use drop and then an item name as stated in the description");
+        Help inspect = new Help ("inspect", "Use inspect command to gain more details about a certain aspect of the game.");
+        Help help = new Help ("help", "Use help to review rules associated with the game.  Use help by itself for a general guidline, add a command word for better detail");
+        Help buy = new Help ("buy", "Use buy to purchase an item.");
+       
         
         beastYard.setLocked(true); 
         
@@ -58,9 +72,10 @@ public class Game {
         }catch(Exception e) {
             System.out.println(e); 
         }
-        printInformation();
+        
+        printInformation(); 
         play();
-
+     
     }
 
     public void play() {
@@ -94,7 +109,9 @@ public class Game {
             case "inspect":
                 inspect (command);
             case "help" :
-                System.out.println ("Command words: go, grab, drop, inspect, pay, and help.  Use inspect to get a more detailed description and potential hints.  The goal is to grab Babe Ruth’s baseball without getting caught by The Beast.");
+            	help (command);
+            case "buy" :
+            	buy (command);
         }
     }
 
@@ -131,6 +148,21 @@ public class Game {
         }
         printInformation();
     }
+    public void buy (Command command) {
+    	if (!command.hasSecondWord()) {
+    		System.out.println ("buy what?");
+    	}
+    	String toBuy= command.getSecondWord();
+    	if (!toBuy.equals("pfFlyers")){
+    		System.out.println("you can't buy that!");
+    	}
+    	if (toBuy.equals("pfFlyers")) {
+    	player.setItem("pfFlyers", pfFlyers);
+    	player.removeItem ("money");
+    	printInformation();
+    	}
+
+    }
 
     public void goRoom (Command command) {
         if (!command.hasSecondWord()) {
@@ -147,10 +179,14 @@ public class Game {
             if(!nextRoom.getLocked()) {
                 currentRoom= nextRoom;
             }
-           if (nextRoom.getLocked()) {
-        	// does the player have something in their inventory?!?!?
-            // if they do, then they can go through and get a new currentRoom assigned 
-        	   System.out.println("room is locked try again");
+            else {
+        	   if (currentRoom.equals(sandlot) && direction.equals("east") && player.getItem("pfFlyers")!=null) {
+        		   currentRoom = beastYard; 
+        		   
+        	   }
+        	   else {
+        		   System.out.println ("you can't go there");
+        	   }
            }
             
 
@@ -186,5 +222,19 @@ public class Game {
             printString += "you can't look at that!";
         }
         System.out.println (printString);
+    }
+    public void help (Command command) {
+    	 if (!command.hasSecondWord()) {
+    		 System.out.println ("Command words: go, grab, drop, inspect, buy, and help.  Use inspect to get a more detailed description and potential hints.  The goal is to grab Babe Ruth’s baseball without getting caught by The Beast.");
+    	 }
+    	 else {
+    		 String whatToHelp = command.getSecondWord();
+    		 if (whatToHelp==null) {
+    			 System.out.println("you can't get help with this"); 
+    		 }
+    		 else {
+  
+    		 }
+    	 }
     }
 }
