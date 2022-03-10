@@ -56,14 +56,6 @@ public class Game {
         smallsHouse.setItem("rope", rope);
         beastYard.setItem ("ball", ball);
         
-        Help go = new Help ("go", "Use go command to move across the map. Use go and then a direction as stated in the description");
-        Help grab = new Help ("grab", "Use grab command to pick up things found in rooms.  Use grab and then an item name as stated in the description.");
-        Help drop = new Help ("drop", "Use drop command to remove items from your inventory.  Use drop and then an item name as stated in the description");
-        Help inspect = new Help ("inspect", "Use inspect command to gain more details about a certain aspect of the game.");
-        Help help = new Help ("help", "Use help to review rules associated with the game.  Use help by itself for a general guidline, add a command word for better detail");
-        Help buy = new Help ("buy", "Use buy to purchase an item.");
-       
-        
         beastYard.setLocked(true); 
         
         currentRoom= sandlot;
@@ -109,7 +101,26 @@ public class Game {
             case "inspect":
                 inspect (command);
             case "help" :
-            	help (command);
+            	System.out.println("Command words: go, grab, drop, inspect, buy, and help.  Use inspect to get a more detailed description and potential hints.  The goal is to grab Babe Ruth’s baseball without getting caught by The Beast.");
+            	break;
+            case "help go":
+            	System.out.println("Use go command to move across the map. Use go and then a direction as stated in the description");
+            	break;
+            case "help grab":
+            	System.out.println ("Use grab command to pick up things found in rooms.  Use grab and then an item name as stated in the description.");
+            	break;
+            case "help drop":
+            	System.out.println ("Use drop command to remove items from your inventory.  Use drop and then an item name as stated in the description");
+            	break;
+            case "help inspect":
+            	System.out.println ("Use inspect command to gain more details about a certain aspect of the game.");
+            	break;
+            case "help help":
+            	System.out.println ("Use help to review rules associated with the game.  Use help by itself for a general guidline, add a command word for better detail");
+            	break;
+            case "help buy" :
+            	System.out.println ("Use buy to purchase an item.");
+            	break;
             case "buy" :
             	buy (command);
         }
@@ -126,8 +137,13 @@ public class Game {
             System.out.println ("you cant grab that");
             return;
         }
+        else if (toGrab.equals(pfFlyers)) {
+        	System.out.println ("Don't steal these! they cost money!");
+        	 currentRoom.setItem("pfFlyers", pfFlyers);
+        }
         else {
             player.setItem(item, toGrab);
+           
         }
         printInformation();
     }
@@ -156,10 +172,13 @@ public class Game {
     	if (!toBuy.equals("pfFlyers")){
     		System.out.println("you can't buy that!");
     	}
-    	if (toBuy.equals("pfFlyers")) {
+    	if (toBuy.equals("pfFlyers")&& player.getItem("money")!=null) {
     	player.setItem("pfFlyers", pfFlyers);
     	player.removeItem ("money");
     	printInformation();
+    	}
+    	else if (toBuy.equals("pfFlyers")){
+    		System.out.println ("you have no money!");
     	}
 
     }
@@ -223,18 +242,5 @@ public class Game {
         }
         System.out.println (printString);
     }
-    public void help (Command command) {
-    	 if (!command.hasSecondWord()) {
-    		 System.out.println ("Command words: go, grab, drop, inspect, buy, and help.  Use inspect to get a more detailed description and potential hints.  The goal is to grab Babe Ruth’s baseball without getting caught by The Beast.");
-    	 }
-    	 else {
-    		 String whatToHelp = command.getSecondWord();
-    		 if (whatToHelp==null) {
-    			 System.out.println("you can't get help with this"); 
-    		 }
-    		 else {
-  
-    		 }
-    	 }
+    
     }
-}

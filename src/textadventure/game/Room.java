@@ -9,7 +9,7 @@ public class Room {
     
     private HashMap<String, Room >exits;
     private HashMap <String, Item > inventory;
-    private HashMap <String, Help> help;
+
     
     boolean locked; 
     public Room (String name, String shortDescription, String longDescription) {
